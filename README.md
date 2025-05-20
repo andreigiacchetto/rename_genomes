@@ -7,8 +7,7 @@ A Python script to rename genome files based on the header content of `.fna` fil
 ## ✨ Author
 
 **Andrei Giacchetto Felice**
-Federal University of Triângulo Mineiro (UFTM)
-Laboratory of Immunology and Bioinformatics
+Laboratory of Immunology and Omics Sciences (LimCom)
 
 ---
 
