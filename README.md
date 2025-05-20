@@ -70,7 +70,7 @@ From this line, the species name (`Escherichia_coli`) is extracted and used to r
 **After:**
 
 ```
-/genomes/Escherichia_coli/
+/genomes/Escherichia_coli_K12/
 ├── Escherichia_coli_K12.fna
 ├── Escherichia_coli_K12.faa
 ```
