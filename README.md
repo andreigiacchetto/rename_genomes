@@ -13,7 +13,7 @@ A Python script to rename genome files based on the header content of `.fna` fil
 
 ## 🛠️ Features
 
-* Renames `.fna`, `.gbk`, `.gbff`, and `.faa` files based on species names extracted from `.fna` headers.
+* Renames `.fna`, `.gbk`, `.gbff`,`.faa`, '.gtf', '.gff' and '.ffn' files based on species names extracted from `.fna` headers.
 * Supports automatic decompression of `.zip`, `.tar.gz`, `.tgz`, or `.tar` files.
 * Also renames directories containing these genome files to match the extracted species name.
 * Skips processing if all files are already correctly named.
