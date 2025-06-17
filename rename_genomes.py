@@ -6,7 +6,7 @@ import zipfile
 import tarfile
 
 # Argument parser
-parser = argparse.ArgumentParser(description="Rename genome files based on .fna content.")
+parser = argparse.ArgumentParser(description="Rename genome files based on .fna content, including renaming 'cds_from_genomic.fna' to '.ffn' and handling multiple file types.")
 parser.add_argument('-d', '--dir', type=str, help="Path to the base directory (default: current working directory)")
 parser.add_argument('--zip', type=str, help="Path to a compressed file (.zip, .tar.gz, .tgz, .tar) to unzip before renaming")
 args = parser.parse_args()
@@ -14,12 +14,13 @@ args = parser.parse_args()
 # Header
 print("=" * 60)
 print("Creation: Andrei Giacchetto Felice")
-print("Laboratory of Immunology and Omics Sciences (LimCom)")
+print("Federal University of Triângulo Mineiro")
+print("Laboratory of Immunology and Bioinformatics")
 print("=" * 60)
-print("Script to rename files based on .fna content")
+print("Script to rename genome files based on .fna content")
 print("=" * 60)
 
-# Função para descompactar o arquivo, se fornecido
+# Function to decompress input file
 def decompress_file(compressed_path):
     if not os.path.isfile(compressed_path):
         print(f"Error: '{compressed_path}' is not a valid file.")
@@ -41,7 +42,6 @@ def decompress_file(compressed_path):
             print("Unsupported compression format.")
             exit(1)
 
-        # Apaga o arquivo compactado original após descompactar
         os.remove(compressed_path)
         print(f"Removed original compressed file: {compressed_path}")
 
@@ -51,7 +51,7 @@ def decompress_file(compressed_path):
 
     return extract_dir
 
-# Definir base_path
+# Define base path
 if args.zip:
     base_path = decompress_file(args.zip)
 else:
@@ -64,7 +64,21 @@ time.sleep(2)
 errors = []
 files_to_rename = False
 
-# Função para extrair nome da espécie
+# Step 1: Rename 'cds_from_genomic.fna' → 'cds_from_genomic.ffn'
+print("Renaming any 'cds_from_genomic.fna' files to 'cds_from_genomic.ffn'...\n")
+for root, dirs, files in os.walk(base_path):
+    for file_name in files:
+        if file_name == "cds_from_genomic.fna":
+            old_file_path = os.path.join(root, file_name)
+            new_file_path = os.path.join(root, "cds_from_genomic.ffn")
+            try:
+                os.rename(old_file_path, new_file_path)
+                print(f"Renamed: {old_file_path} → {new_file_path}")
+            except Exception as e:
+                print(f"Error renaming {old_file_path}: {e}")
+                errors.append(old_file_path)
+
+# Function to extract species name from .fna file
 def extract_species_name(fna_file):
     try:
         with open(fna_file, "r") as f:
@@ -83,7 +97,7 @@ def extract_species_name(fna_file):
         print(f"Error processing {fna_file}: {e}")
     return None
 
-# Verifica se os nomes já estão corretos
+# Step 2: Check if all genome names are already correct
 all_names_correct = True
 for root, dirs, files in os.walk(base_path):
     for file_name in files:
@@ -99,7 +113,7 @@ if all_names_correct:
     time.sleep(1)
     exit(0)
 
-# Renomeia arquivos e diretórios
+# Step 3: Rename files and directories
 for root, dirs, files in os.walk(base_path):
     try:
         extracted_name = None
@@ -117,7 +131,7 @@ for root, dirs, files in os.walk(base_path):
 
         if extracted_name:
             for file_name in files:
-                if file_name.endswith((".gbk", ".gbff", ".faa")):
+                if file_name.endswith((".gbk", ".gbff", ".faa", ".ffn", ".gtf", ".gff")):
                     old_file_path = os.path.join(root, file_name)
                     extension = os.path.splitext(file_name)[1]
                     new_file_path = os.path.join(root, f"{extracted_name}{extension}")
@@ -141,7 +155,7 @@ for root, dirs, files in os.walk(base_path):
         print(f"Error in directory: {root} → {e}")
         errors.append(root)
 
-# Relatório final
+# Step 4: Final report
 if errors:
     print("\nDirectories with errors:")
     for error in errors:
@@ -150,4 +164,3 @@ elif files_to_rename:
     print("\nAll files were successfully renamed!")
 else:
     print("\nNo changes were needed.")
-
